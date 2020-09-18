@@ -46,10 +46,9 @@ const std::pair<ZZ, ZZ> gcd(const std::pair<ZZ, ZZ> a, const std::pair<ZZ, ZZ> b
 
 
 int main() {
-    // cout << "Enter a prime number: p = ";
-    ZZ p = GenPrime_ZZ(4097);
-    cout << "p = " << p << endl;
-    // cin >> p;
+    cout << "Enter a prime number: p = ";
+    ZZ p;
+    cin >> p;
     if (!ProbPrime(p)) {
         cout << "Your choice of p is not prime." << endl;
         return 0;
