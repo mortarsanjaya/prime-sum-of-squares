@@ -2,9 +2,12 @@
 #include <NTL/ZZ.h>
 #include <NTL/ZZ_p.h>
 #include <utility>
+#include <chrono>
+#include <iomanip>
 
 using namespace std;
 using namespace NTL;
+using namespace std::chrono;
 
 const std::pair<ZZ, ZZ> operator%(const std::pair<ZZ, ZZ> a, const std::pair<ZZ, ZZ> b) {
     auto Nb = sqr(b.first) + sqr(b.second);
@@ -54,28 +57,33 @@ int main() {
         return 0;
     }
     
+    auto start = steady_clock::now();
+    
     cout << "Finding a pair of positive integers (x, y) with x^2 + y^2 = p" << endl;
     
     if (p == 2) {
         cout << "(x, y) = (1, 1)" << endl;
-        return 0;
-    }
-    
-    if (p % 4 != 1) {
+    } else if (p % 4 != 1) {
         cout << "There is no such pair." << endl;
-        return 0;
-    }
-    
-    // Else p == 1 mod 4
-    const ZZ p_ZZ = ZZ(p);
-    ZZ z = SqrRootMod(p_ZZ - 1, p_ZZ);
-    
-    // Now z = sqrt(-1) so in Z[i], p | N(y + i)
-    // The rest is finding gcd(z + i, p)
-    auto w = gcd(std::pair<ZZ, ZZ>(z, ZZ(1)), std::pair<ZZ, ZZ>(p_ZZ, ZZ(0)));
-    if (sqr(w.first) + sqr(w.second) == p) {
-        cout << "(x, y) = (" << abs(w.first) << ", " << abs(w.second) << ")" << endl;
     } else {
-        cout << "Error!" << endl;
+        // Else p == 1 mod 4
+        const ZZ p_ZZ = ZZ(p);
+        ZZ z = SqrRootMod(p_ZZ - 1, p_ZZ);
+    
+        // Now z = sqrt(-1) so in Z[i], p | N(y + i)
+        // The rest is finding gcd(z + i, p)
+        auto w = gcd(std::pair<ZZ, ZZ>(z, ZZ(1)), std::pair<ZZ, ZZ>(p_ZZ, ZZ(0)));
+        if (sqr(w.first) + sqr(w.second) == p) {
+            cout << "(x, y) = (" << abs(w.first) << ", " << abs(w.second) << ")" << endl;
+        } else {
+            cout << "Error!" << endl;
+        }
     }
+    
+    auto end = steady_clock::now();
+    const long total_duration = duration_cast<microseconds>(end - start).count();
+    const long seconds = total_duration / 1000000;
+    const long microseconds = total_duration % 1000000;
+    
+    cout << "Run in " << seconds << "." << setw(6) << setfill('0') << microseconds << " seconds." << endl;
 }
